@@ -1,10 +1,11 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import Header from "../common/Header";
 import Container from "../common/Container";
 
-export default function Main() {
+export default function Main({ data, setDate }) {
   const navigate = useNavigate();
+
   return (
     <>
       <Header />
@@ -32,90 +33,93 @@ export default function Main() {
             추가
           </button>
         </div>
-        {[1, 2, 3, 4].map((item) => (
-          <div
-            key={item}
-            style={{
-              backgroundColor: "#EEEEEE",
-              height: "100px",
-              borderRadius: "24px",
-              marginBottom: "12px",
-              display: "flex",
-              padding: "12px 16px 12px 16px",
-            }}
-          >
-            <div
-              onClick={() => {
-                navigate("/detail/1");
-              }}
-              style={{
-                flex: 4,
-                borderRight: "1px solid lightgrey",
-                cursor: "pointer",
-              }}
-            >
-              <h2>제목</h2>
-              <p
+        {/* 초기값 형성해 놓은 걸 map 함수로 화면에뿌리기 */}
+        {data
+          // .filter((item) => id === item.id)
+          .map((datas) => {
+            return (
+              <div
+                key={datas.id}
                 style={{
-                  width: "300px",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  whiteSpace: "nowrap",
+                  backgroundColor: "#EEEEEE",
+                  height: "100px",
+                  borderRadius: "24px",
+                  marginBottom: "12px",
+                  display: "flex",
+                  padding: "12px 16px 12px 16px",
                 }}
               >
-                Lorem ipsum dolor, sit amet consectetur adipisicing elit.Lorem
-                ipsum dolor, sit amet consectetur adipisicing elit.Lorem ipsum
-                dolor, sit amet consectetur adipisicing elit.Lorem ipsum dolor,
-                sit amet consectetur adipisicing elit.
-              </p>
-            </div>
-            <div
-              style={{
-                flex: 1,
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "end",
-                justifyContent: "space-around",
-                gap: "12px",
-              }}
-            >
-              <div>작성자</div>
-              <div>
-                <button
+                <div
                   onClick={() => {
-                    navigate("/edit");
+                    navigate(`/detail/${datas.id}`);
                   }}
                   style={{
-                    border: "none",
-                    padding: "8px",
-                    borderRadius: "6px",
-                    backgroundColor: "orange",
-                    color: "white",
-                    cursor: "pointer",
-                    marginRight: "6px",
-                  }}
-                >
-                  수정
-                </button>
-                <button
-                  onClick={() => {
-                    alert("삭제할까?");
-                  }}
-                  style={{
-                    border: "none",
-                    padding: "8px",
-                    borderRadius: "6px",
-                    backgroundColor: "red",
-                    color: "white",
+                    flex: 4,
+                    borderRight: "1px solid lightgrey",
                     cursor: "pointer",
                   }}
                 >
-                  삭제
-                </button>
+                  <h2>{datas.title}</h2>
+                  <p
+                    tyle={{
+                      width: "300px",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {datas.content}
+                  </p>
+                </div>
+                <div
+                  style={{
+                    flex: 1,
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "end",
+                    justifyContent: "space-around",
+                    gap: "12px",
+                  }}
+                >
+                  <div>{datas.author}</div>
+                  <div>
+                    <Link to={`/edit/${datas.id}`}>
+                      <button
+                        style={{
+                          border: "none",
+                          padding: "8px",
+                          borderRadius: "6px",
+                          backgroundColor: "orange",
+                          color: "white",
+                          cursor: "pointer",
+                          marginRight: "6px",
+                        }}
+                      >
+                        수정
+                      </button>
+                    </Link>
+
+                    <button
+                      onClick={() => {
+                        alert("삭제하시겠습니까?");
+                        setDate(data.filter((event) => event.id !== datas.id));
+                      }}
+                      style={{
+                        border: "none",
+                        padding: "8px",
+                        borderRadius: "6px",
+                        backgroundColor: "red",
+                        color: "white",
+                        cursor: "pointer",
+                      }}
+                    >
+                      삭제
+                    </button>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-        ))}
+            );
+          })}
       </Container>
     </>
   );
