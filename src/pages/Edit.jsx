@@ -20,8 +20,8 @@ export default function Edit({ data, setDate }) {
   // console.log("item=>", findItem);
 
   // 없으면 빈배열로한다 옵셔널체이닝을 걸어준다.
-  const [editTitle, editSetTitle] = useState(findItem.title);
-  const [editContent, editSetContent] = useState(findItem.content);
+  const [editTitle, editSetTitle] = useState(findItem?.title || "");
+  const [editContent, editSetContent] = useState(findItem?.content || "");
 
   const navigate = useNavigate();
 
