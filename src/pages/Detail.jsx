@@ -13,7 +13,7 @@ export default function Detail({ data, setDate }) {
       <Header />
       <Container>
         {data
-          .filter((event) => event.id === +id)
+          .filter((event) => event.id === id)
           .map((item) => {
             console.log("datas=>", item);
             return (
@@ -62,8 +62,12 @@ export default function Detail({ data, setDate }) {
 
                   <button
                     onClick={() => {
-                      setDate(data.filter((event) => event.id !== item.id));
-                      alert("삭제할까?");
+                      if (window.confirm("삭제하시겠습니까?")) {
+                        setDate(data.filter((event) => event.id !== item.id));
+                        navigate("/");
+                      }
+                      // setDate(data.filter((event) => event.id !== item.id));
+                      // alert("삭제할까?");
                     }}
                     style={{
                       border: "none",

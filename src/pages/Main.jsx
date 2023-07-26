@@ -101,8 +101,13 @@ export default function Main({ data, setDate }) {
 
                     <button
                       onClick={() => {
-                        alert("삭제하시겠습니까?");
-                        setDate(data.filter((event) => event.id !== datas.id));
+                        // alert("삭제하시겠습니까?");
+
+                        if (window.confirm("삭제하시겠습니까?")) {
+                          setDate(
+                            data.filter((event) => event.id !== datas.id)
+                          );
+                        }
                       }}
                       style={{
                         border: "none",

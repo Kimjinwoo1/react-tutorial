@@ -1,8 +1,11 @@
 import React from "react";
 import Header from "../common/Header";
 import Container from "../common/Container";
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
+  const navigate = useNavigate();
+
   return (
     <>
       <Header />
@@ -81,6 +84,9 @@ export default function Login() {
               }}
             >
               <button
+                onClick={() => {
+                  navigate("/signup");
+                }}
                 style={{
                   width: "100%",
                   border: "none",

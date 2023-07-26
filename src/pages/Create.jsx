@@ -1,18 +1,14 @@
-import React from "react";
-
+import React, { useState } from "react";
 import Header from "../common/Header";
 import Container from "../common/Container";
 import { useNavigate } from "react-router-dom";
+import { nanoid } from "nanoid";
 
-export default function Create({
-  data,
-  setDate,
-  title,
-  setTitle,
-  contents,
-  setContents,
-}) {
+export default function Create({ data, setDate }) {
   const navigate = useNavigate();
+
+  const [title, setTitle] = useState("");
+  const [contents, setContents] = useState("");
 
   return (
     <>
@@ -29,9 +25,10 @@ export default function Create({
             e.preventDefault();
             console.log("제출!");
             const newData = {
-              id: data.length + 1,
+              id: nanoid(),
               title,
               content: contents,
+              author: "작성자",
             };
             setDate([...data, newData]);
             navigate("/");
