@@ -2,9 +2,16 @@ import React, { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Header from "../common/Header";
 import Container from "../common/Container";
+import { useDispatch, useSelector } from "react-redux";
+import { removeData } from "../redux/modules/memo";
 
-export default function Main({ data, setDate }) {
+export default function Main() {
   const navigate = useNavigate();
+
+  const dispatch = useDispatch();
+
+  const data = useSelector((state) => state.dataSlice);
+  console.log("data=>", data);
 
   return (
     <>
@@ -104,9 +111,10 @@ export default function Main({ data, setDate }) {
                         // alert("삭제하시겠습니까?");
 
                         if (window.confirm("삭제하시겠습니까?")) {
-                          setDate(
-                            data.filter((event) => event.id !== datas.id)
-                          );
+                          // setDate(
+                          //   data.filter((event) => event.id !== datas.id)
+                          dispatch(removeData(datas.id));
+                          // );
                         }
                       }}
                       style={{

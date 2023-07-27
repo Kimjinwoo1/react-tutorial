@@ -2,8 +2,14 @@ import React from "react";
 import Header from "../common/Header";
 import Container from "../common/Container";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { removeData } from "../redux/modules/memo";
 
-export default function Detail({ data, setDate }) {
+export default function Detail() {
+  const data = useSelector((state) => state.dataSlice);
+
+  const dispatch = useDispatch();
+
   const navigate = useNavigate();
   // 수정사항 아이디값 추출
   const { id } = useParams();
@@ -63,7 +69,8 @@ export default function Detail({ data, setDate }) {
                   <button
                     onClick={() => {
                       if (window.confirm("삭제하시겠습니까?")) {
-                        setDate(data.filter((event) => event.id !== item.id));
+                        // setDate(data.filter((event) => event.id !== item.id));
+                        dispatch(removeData(item.id));
                         navigate("/");
                       }
                       // setDate(data.filter((event) => event.id !== item.id));

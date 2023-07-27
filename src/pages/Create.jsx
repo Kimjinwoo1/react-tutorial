@@ -3,9 +3,16 @@ import Header from "../common/Header";
 import Container from "../common/Container";
 import { useNavigate } from "react-router-dom";
 import { nanoid } from "nanoid";
+import { useDispatch, useSelector } from "react-redux";
+import { addData } from "../redux/modules/memo";
 
-export default function Create({ data, setDate }) {
+export default function Create() {
   const navigate = useNavigate();
+
+  const dispatch = useDispatch();
+
+  const data = useSelector((state) => state.data);
+  // console.log("data=>", data);
 
   const [title, setTitle] = useState("");
   const [contents, setContents] = useState("");
@@ -30,7 +37,9 @@ export default function Create({ data, setDate }) {
               content: contents,
               author: "작성자",
             };
-            setDate([...data, newData]);
+            // setDate([...data, newData]);
+            dispatch(addData(newData));
+            console.log("newData=>", data);
             navigate("/");
           }}
         >
