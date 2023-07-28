@@ -4,6 +4,7 @@ import Container from "../common/Container";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { removeData } from "../redux/modules/memo";
+import { styled } from "styled-components";
 
 export default function Detail() {
   const data = useSelector((state) => state.dataSlice);
@@ -13,85 +14,76 @@ export default function Detail() {
   const navigate = useNavigate();
   // 수정사항 아이디값 추출
   const { id } = useParams();
-  console.log("id=>", id);
+
+  const post = data.find((item) => item.id === id);
   return (
     <>
       <Header />
       <Container>
-        {data
-          .filter((event) => event.id === id)
-          .map((item) => {
-            console.log("datas=>", item);
-            return (
-              <div key={item.id}>
-                <h1
-                  style={{
-                    border: "1px solid lightgray",
-                    borderRadius: "12px",
-                    padding: "12px",
-                  }}
-                >
-                  {item.title}
-                </h1>
-                <div
-                  style={{
-                    height: "400px",
-                    border: "1px solid lightgray",
-                    borderRadius: "12px",
-                    padding: "12px",
-                  }}
-                >
-                  <p>{item.content}</p>
-                </div>
-                <div
-                  style={{
-                    marginTop: "12px",
-                    display: "flex",
-                    justifyContent: "end",
-                  }}
-                >
-                  <Link to={`/edit/${item.id}`}>
-                    <button
-                      style={{
-                        border: "none",
-                        padding: "8px",
-                        borderRadius: "6px",
-                        backgroundColor: "orange",
-                        color: "white",
-                        cursor: "pointer",
-                        marginRight: "6px",
-                      }}
-                    >
-                      수정
-                    </button>
-                  </Link>
+        <div>
+          <StContainerH1>{post.title}</StContainerH1>
+          <StContentDiv>
+            <p>{post.content}</p>
+          </StContentDiv>
+          <StButtonDiv>
+            <Link to={`/edit/${post.id}`}>
+              <StEditButton>수정</StEditButton>
+            </Link>
 
-                  <button
-                    onClick={() => {
-                      if (window.confirm("삭제하시겠습니까?")) {
-                        // setDate(data.filter((event) => event.id !== item.id));
-                        dispatch(removeData(item.id));
-                        navigate("/");
-                      }
-                      // setDate(data.filter((event) => event.id !== item.id));
-                      // alert("삭제할까?");
-                    }}
-                    style={{
-                      border: "none",
-                      padding: "8px",
-                      borderRadius: "6px",
-                      backgroundColor: "red",
-                      color: "white",
-                      cursor: "pointer",
-                    }}
-                  >
-                    삭제
-                  </button>
-                </div>
-              </div>
-            );
-          })}
+            <StDeleteButton
+              onClick={() => {
+                if (window.confirm("삭제하시겠습니까?")) {
+                  dispatch(removeData(post.id));
+                  navigate("/");
+                }
+              }}
+            >
+              삭제
+            </StDeleteButton>
+          </StButtonDiv>
+        </div>
+        {/* //   );
+          // }
+          // )} */}
       </Container>
     </>
   );
 }
+
+const StContainerH1 = styled.h1`
+  border: 1px solid lightgray;
+  border-radius: 12px;
+  padding: 12px;
+`;
+
+const StContentDiv = styled.div`
+  height: 400px;
+  border: 1px solid lightgray;
+  border-radius: 12px;
+  padding: 12px;
+`;
+
+const StButtonDiv = styled.div`
+  margin-top: 12px;
+  display: flex;
+  justify-content: end;
+`;
+
+const StEditButton = styled.button`
+  border: none;
+  padding: 8px;
+  border-radius: 6px;
+  background-color: orange;
+  color: white;
+  cursor: pointer;
+  margin-right: 6px;
+`;
+
+const StDeleteButton = styled.button`
+  border: none;
+  padding: 8px;
+  border-radius: 6px;
+  background-color: red;
+  color: white;
+  cursor: pointer;
+`;

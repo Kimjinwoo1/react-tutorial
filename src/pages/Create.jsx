@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { nanoid } from "nanoid";
 import { useDispatch, useSelector } from "react-redux";
 import { addData } from "../redux/modules/memo";
+import { styled } from "styled-components";
 
 export default function Create() {
   const navigate = useNavigate();
@@ -12,7 +13,6 @@ export default function Create() {
   const dispatch = useDispatch();
 
   const data = useSelector((state) => state.data);
-  // console.log("data=>", data);
 
   const [title, setTitle] = useState("");
   const [contents, setContents] = useState("");
@@ -21,84 +21,82 @@ export default function Create() {
     <>
       <Header />
       <Container>
-        <form
-          style={{
-            height: "600px",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-evenly",
-          }}
+        <StForm
           onSubmit={(e) => {
             e.preventDefault();
-            console.log("제출!");
             const newData = {
               id: nanoid(),
               title,
               content: contents,
               author: "작성자",
             };
-            // setDate([...data, newData]);
             dispatch(addData(newData));
-            console.log("newData=>", data);
             navigate("/");
           }}
         >
           <div>
-            <input
+            <StInputTitle
               placeholder="제목"
               value={title}
               onChange={(e) => {
                 setTitle(e.target.value);
               }}
-              style={{
-                width: "100%",
-                height: "60px",
-                fontSize: "18px",
-                borderRadius: "12px",
-                border: "1px solid lightgrey",
-                padding: "8px",
-                boxSizing: "border-box",
-              }}
             />
           </div>
-          <div
-            style={{
-              height: "400px",
-            }}
-          >
-            <textarea
+          <StTextareaDiv>
+            <StTextarea
               placeholder="내용"
               value={contents}
               onChange={(e) => {
                 setContents(e.target.value);
               }}
-              style={{
-                resize: "none",
-                height: "100%",
-                width: "100%",
-                fontSize: "18px",
-                borderRadius: "12px",
-                border: "1px solid lightgrey",
-                padding: "12px",
-                boxSizing: "border-box",
-              }}
             />
-          </div>
-          <button
-            style={{
-              width: "100%",
-              height: "40px",
-              border: "none",
-              color: "white",
-              borderRadius: "12px",
-              backgroundColor: "skyblue",
-              cursor: "pointer",
-            }}
-          >
-            추가하기
-          </button>
-        </form>
+          </StTextareaDiv>
+          <StCreateBtn>추가하기</StCreateBtn>
+        </StForm>
       </Container>
     </>
   );
 }
+
+const StForm = styled.form`
+  height: 600px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+`;
+
+const StInputTitle = styled.input`
+  width: 100%;
+  height: 60px;
+  font-size: 18px;
+  border-radius: 12px;
+  border: 1px solid lightgrey;
+  padding: 8px;
+  box-sizing: border-box;
+`;
+
+const StTextareaDiv = styled.div`
+  height: 400px;
+`;
+
+const StTextarea = styled.textarea`
+  resize: none;
+  height: 100%;
+  width: 100%;
+  font-size: 18px;
+  border-radius: 12px;
+  border: 1px solid lightgrey;
+  padding: 12px;
+  box-sizing: border-box;
+`;
+
+const StCreateBtn = styled.button`
+  width: 100%;
+  height: 40px;
+  border: none;
+  color: white;
+  border-radius: 12px;
+  background-color: skyblue;
+  cursor: pointer;
+`;

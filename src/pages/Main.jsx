@@ -4,6 +4,7 @@ import Header from "../common/Header";
 import Container from "../common/Container";
 import { useDispatch, useSelector } from "react-redux";
 import { removeData } from "../redux/modules/memo";
+import { styled } from "styled-components";
 
 export default function Main() {
   const navigate = useNavigate();
@@ -11,129 +12,130 @@ export default function Main() {
   const dispatch = useDispatch();
 
   const data = useSelector((state) => state.dataSlice);
-  console.log("data=>", data);
 
   return (
     <>
       <Header />
       <Container>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "end",
-            padding: "12px",
-          }}
-        >
-          <button
+        <StContainerDiv>
+          <StContainerButton
             onClick={() => {
               navigate("/create");
             }}
-            style={{
-              border: "none",
-              padding: "8px",
-              borderRadius: "6px",
-              backgroundColor: "skyblue",
-              color: "white",
-              cursor: "pointer",
-            }}
           >
             추가
-          </button>
-        </div>
+          </StContainerButton>
+        </StContainerDiv>
         {/* 초기값 형성해 놓은 걸 map 함수로 화면에뿌리기 */}
-        {data
-          // .filter((item) => id === item.id)
-          .map((datas) => {
-            return (
-              <div
-                key={datas.id}
-                style={{
-                  backgroundColor: "#EEEEEE",
-                  height: "100px",
-                  borderRadius: "24px",
-                  marginBottom: "12px",
-                  display: "flex",
-                  padding: "12px 16px 12px 16px",
+        {data.map((data) => {
+          return (
+            <StMainDiv key={data.id}>
+              <StCardDiv
+                onClick={() => {
+                  navigate(`/detail/${data.id}`);
                 }}
               >
-                <div
-                  onClick={() => {
-                    navigate(`/detail/${datas.id}`);
-                  }}
-                  style={{
-                    flex: 4,
-                    borderRight: "1px solid lightgrey",
-                    cursor: "pointer",
-                  }}
-                >
-                  <h2>{datas.title}</h2>
-                  <p
-                    tyle={{
-                      width: "300px",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    {datas.content}
-                  </p>
-                </div>
-                <div
-                  style={{
-                    flex: 1,
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "end",
-                    justifyContent: "space-around",
-                    gap: "12px",
-                  }}
-                >
-                  <div>{datas.author}</div>
-                  <div>
-                    <Link to={`/edit/${datas.id}`}>
-                      <button
-                        style={{
-                          border: "none",
-                          padding: "8px",
-                          borderRadius: "6px",
-                          backgroundColor: "orange",
-                          color: "white",
-                          cursor: "pointer",
-                          marginRight: "6px",
-                        }}
-                      >
-                        수정
-                      </button>
-                    </Link>
-
-                    <button
-                      onClick={() => {
-                        // alert("삭제하시겠습니까?");
-
-                        if (window.confirm("삭제하시겠습니까?")) {
-                          // setDate(
-                          //   data.filter((event) => event.id !== datas.id)
-                          dispatch(removeData(datas.id));
-                          // );
-                        }
-                      }}
+                <h2>{data.title}</h2>
+                <StContentP>{data.content}</StContentP>
+              </StCardDiv>
+              <StAuthorDiv>
+                <div>{data.author}</div>
+                <div>
+                  <Link to={`/edit/${data.id}`}>
+                    <StEditButton
                       style={{
                         border: "none",
                         padding: "8px",
                         borderRadius: "6px",
-                        backgroundColor: "red",
+                        backgroundColor: "orange",
                         color: "white",
                         cursor: "pointer",
+                        marginRight: "6px",
                       }}
                     >
-                      삭제
-                    </button>
-                  </div>
+                      수정
+                    </StEditButton>
+                  </Link>
+
+                  <StDeleteButton
+                    onClick={() => {
+                      if (window.confirm("삭제하시겠습니까?")) {
+                        dispatch(removeData(data.id));
+                      }
+                    }}
+                  >
+                    삭제
+                  </StDeleteButton>
                 </div>
-              </div>
-            );
-          })}
+              </StAuthorDiv>
+            </StMainDiv>
+          );
+        })}
       </Container>
     </>
   );
 }
+
+const StContainerDiv = styled.div`
+  display: flex;
+  justify-content: end;
+  padding: 12px;
+`;
+
+const StContainerButton = styled.button`
+  border: none;
+  padding: 8px;
+  border-radius: 6px;
+  background-color: skyblue;
+  color: white;
+  cursor: pointer;
+`;
+
+const StMainDiv = styled.div`
+  background-color: #eeeeee;
+  height: 100px;
+  border-radius: 24px;
+  margin-bottom: 12px;
+  display: flex;
+  padding: 12px 16px 12px 16px;
+`;
+
+const StCardDiv = styled.div`
+  flex: 4;
+  border-right: 1px solid lightgrey;
+  cursor: pointer;
+`;
+
+const StContentP = styled.p`
+  width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+`;
+const StAuthorDiv = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+  justify-content: space-around;
+  gap: 12px;
+`;
+
+const StEditButton = styled.button`
+  border: none;
+  padding: 8px;
+  border-radius: 6px;
+  background-color: orange;
+  color: white;
+  cursor: pointer;
+  margin-right: 6px;
+`;
+
+const StDeleteButton = styled.button`
+  border: none;
+  padding: 8px;
+  border-radius: 6px;
+  background-color: red;
+  color: white;
+  cursor: pointer;
+`;

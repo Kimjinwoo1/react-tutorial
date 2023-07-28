@@ -24,7 +24,7 @@ const initialState = [
 
 const dataSlice = createSlice({
     name: 'data',
-    initialState: initialState,
+    initialState,
     reducers: {
         // 추가하기 reducers
         addData: (state, action) => {
