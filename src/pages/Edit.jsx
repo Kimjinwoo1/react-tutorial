@@ -1,7 +1,7 @@
 import React, { Fragment, useEffect, useState } from "react";
 import Header from "../common/Header";
 import Container from "../common/Container";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { editData } from "../redux/modules/memo";
 import { styled } from "styled-components";
@@ -9,25 +9,31 @@ import { styled } from "styled-components";
 export default function Edit() {
   const data = useSelector((state) => state.dataSlice);
 
+  const { state } = useLocation();
+  console.log("state=>", state.findData);
+
   const dispatch = useDispatch();
 
   const { id } = useParams();
   const findItem = data.find((item) => item.id === id);
   // 없으면 문자열로한다 아님 옵셔널체이닝을 걸어준다.
-  const [editTitle, editSetTitle] = useState(findItem?.title || "");
-  const [editContent, editSetContent] = useState(findItem?.content || "");
+  const [editTitle, editSetTitle] = useState(state.findData?.title || "");
+  const [editContent, editSetContent] = useState(state.findData?.content || "");
 
   const navigate = useNavigate();
 
   const submitHandler = (e) => {
     e.preventDefault();
     const newData = {
-      id: id,
+      id: state.findData.id,
       title: editTitle,
       content: editContent,
     };
-    dispatch(editData(newData));
-    navigate("/");
+    console.log("newData=>", newData);
+    if (state) {
+      dispatch(editData(newData));
+      navigate("/");
+    }
   };
 
   return (

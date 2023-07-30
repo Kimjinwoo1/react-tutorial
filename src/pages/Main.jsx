@@ -11,7 +11,7 @@ export default function Main() {
 
   const dispatch = useDispatch();
 
-  const data = useSelector((state) => state.dataSlice);
+  const findData = useSelector((state) => state.dataSlice);
 
   return (
     <>
@@ -27,40 +27,47 @@ export default function Main() {
           </StContainerButton>
         </StContainerDiv>
         {/* 초기값 형성해 놓은 걸 map 함수로 화면에뿌리기 */}
-        {data.map((data) => {
+        {findData.map((findData) => {
           return (
-            <StMainDiv key={data.id}>
+            <StMainDiv key={findData.id}>
               <StCardDiv
                 onClick={() => {
-                  navigate(`/detail/${data.id}`);
+                  navigate(`/detail/${findData.id}`);
                 }}
               >
-                <h2>{data.title}</h2>
-                <StContentP>{data.content}</StContentP>
+                <h2>{findData.title}</h2>
+                <StContentP>{findData.content}</StContentP>
               </StCardDiv>
               <StAuthorDiv>
-                <div>{data.author}</div>
+                <div>{findData.author}</div>
                 <div>
-                  <Link to={`/edit/${data.id}`}>
-                    <StEditButton
-                      style={{
-                        border: "none",
-                        padding: "8px",
-                        borderRadius: "6px",
-                        backgroundColor: "orange",
-                        color: "white",
-                        cursor: "pointer",
-                        marginRight: "6px",
-                      }}
-                    >
-                      수정
-                    </StEditButton>
-                  </Link>
+                  {/* <Link to={`/edit/${data.id}`}> */}
+                  <StEditButton
+                    onClick={() => {
+                      navigate("/edit", {
+                        state: {
+                          findData,
+                        },
+                      });
+                    }}
+                    style={{
+                      border: "none",
+                      padding: "8px",
+                      borderRadius: "6px",
+                      backgroundColor: "orange",
+                      color: "white",
+                      cursor: "pointer",
+                      marginRight: "6px",
+                    }}
+                  >
+                    수정
+                  </StEditButton>
+                  {/* </Link> */}
 
                   <StDeleteButton
                     onClick={() => {
                       if (window.confirm("삭제하시겠습니까?")) {
-                        dispatch(removeData(data.id));
+                        dispatch(removeData(findData.id));
                       }
                     }}
                   >

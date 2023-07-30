@@ -15,25 +15,40 @@ export default function Detail() {
   // 수정사항 아이디값 추출
   const { id } = useParams();
 
-  const post = data.find((item) => item.id === id);
+  const findData = data.find((item) => item.id === id);
+  console.log("findData=>", findData);
+
+  // if (!findData) {
+  //   return <div>로딩중입니다.</div>;
+  // }
   return (
     <>
       <Header />
       <Container>
         <div>
-          <StContainerH1>{post.title}</StContainerH1>
+          <StContainerH1>{findData?.title}</StContainerH1>
           <StContentDiv>
-            <p>{post.content}</p>
+            <p>{findData?.content}</p>
           </StContentDiv>
           <StButtonDiv>
-            <Link to={`/edit/${post.id}`}>
-              <StEditButton>수정</StEditButton>
-            </Link>
+            {/* <Link to={`/edit/${findData?.id}`}> */}
+            <StEditButton
+              onClick={() => {
+                navigate("/edit", {
+                  state: {
+                    findData,
+                  },
+                });
+              }}
+            >
+              수정
+            </StEditButton>
+            {/* </Link> */}
 
             <StDeleteButton
               onClick={() => {
                 if (window.confirm("삭제하시겠습니까?")) {
-                  dispatch(removeData(post.id));
+                  dispatch(removeData(findData?.id));
                   navigate("/");
                 }
               }}

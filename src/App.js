@@ -17,7 +17,8 @@ function App() {
       <Route path="/detail/:id" element={<Detail />} />
       <Route path="/create" element={<Create />} />
       {/* 수정하기 넘어가도 원래 가지고있던 제목이나 내용도 같이가져가기위하여*/}
-      <Route path="/edit/:id" element={<Edit />} />
+      {/* <Route path="/edit/:id" element={<Edit />} /> */}
+      <Route path='/edit' element={<Edit />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/login" element={<Login />} />
     </Routes>
