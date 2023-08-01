@@ -6,6 +6,8 @@ import { nanoid } from "nanoid";
 import { useDispatch, useSelector } from "react-redux";
 import { addData } from "../redux/modules/memo";
 import { styled } from "styled-components";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { auth } from "../firebase";
 
 export default function Create() {
   const navigate = useNavigate();
@@ -13,6 +15,8 @@ export default function Create() {
   const dispatch = useDispatch();
 
   const data = useSelector((state) => state.data);
+
+  const [user] = useAuthState(auth);
 
   const [title, setTitle] = useState("");
   const [contents, setContents] = useState("");
@@ -28,7 +32,7 @@ export default function Create() {
               id: nanoid(),
               title,
               content: contents,
-              author: "작성자",
+              author: [user.email],
             };
             dispatch(addData(newData));
             navigate("/");

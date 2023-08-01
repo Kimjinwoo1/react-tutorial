@@ -5,6 +5,8 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { removeData } from "../redux/modules/memo";
 import { styled } from "styled-components";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { auth } from "../firebase";
 
 export default function Detail() {
   const data = useSelector((state) => state.dataSlice);
@@ -16,7 +18,8 @@ export default function Detail() {
   const { id } = useParams();
 
   const findData = data.find((item) => item.id === id);
-  console.log("findData=>", findData);
+
+  const [user] = useAuthState(auth);
 
   // if (!findData) {
   //   return <div>로딩중입니다.</div>;
@@ -34,11 +37,15 @@ export default function Detail() {
             {/* <Link to={`/edit/${findData?.id}`}> */}
             <StEditButton
               onClick={() => {
-                navigate("/edit", {
-                  state: {
-                    findData,
-                  },
-                });
+                if (findData.author == user.email) {
+                  navigate("/edit", {
+                    state: {
+                      findData,
+                    },
+                  });
+                } else {
+                  alert("본인 게시물이 아닙니다.");
+                }
               }}
             >
               수정
@@ -47,9 +54,13 @@ export default function Detail() {
 
             <StDeleteButton
               onClick={() => {
-                if (window.confirm("삭제하시겠습니까?")) {
-                  dispatch(removeData(findData?.id));
-                  navigate("/");
+                if (findData.author == user.email) {
+                  if (window.confirm("삭제하시겠습니까?")) {
+                    dispatch(removeData(findData?.id));
+                    navigate("/");
+                  }
+                } else {
+                  alert("본인 게시물만 삭제할수 있습니다.");
                 }
               }}
             >

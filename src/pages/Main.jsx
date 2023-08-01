@@ -5,6 +5,8 @@ import Container from "../common/Container";
 import { useDispatch, useSelector } from "react-redux";
 import { removeData } from "../redux/modules/memo";
 import { styled } from "styled-components";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { auth } from "../firebase";
 
 export default function Main() {
   const navigate = useNavigate();
@@ -13,6 +15,8 @@ export default function Main() {
 
   const findData = useSelector((state) => state.dataSlice);
 
+  const [user] = useAuthState(auth);
+
   return (
     <>
       <Header />
@@ -20,7 +24,10 @@ export default function Main() {
         <StContainerDiv>
           <StContainerButton
             onClick={() => {
-              navigate("/create");
+              {
+                user ? navigate("/create") : alert("로그인이 필요합니다.");
+              }
+              // navigate("/create");
             }}
           >
             추가
@@ -44,11 +51,16 @@ export default function Main() {
                   {/* <Link to={`/edit/${data.id}`}> */}
                   <StEditButton
                     onClick={() => {
-                      navigate("/edit", {
-                        state: {
-                          findData,
-                        },
-                      });
+                      // 클릭시 게시물의 author와 로그인한 이메일이 일치할때만 이동구현.
+                      if (findData.author == user.email) {
+                        navigate("/edit", {
+                          state: {
+                            findData,
+                          },
+                        });
+                      } else {
+                        alert("본인 게시물이 아닙니다.");
+                      }
                     }}
                     style={{
                       border: "none",
@@ -66,8 +78,12 @@ export default function Main() {
 
                   <StDeleteButton
                     onClick={() => {
-                      if (window.confirm("삭제하시겠습니까?")) {
-                        dispatch(removeData(findData.id));
+                      if (findData.author == user.email) {
+                        if (window.confirm("삭제하시겠습니까?")) {
+                          dispatch(removeData(findData.id));
+                        }
+                      } else {
+                        alert("본인 게시물만 삭제할수 있습니다.");
                       }
                     }}
                   >

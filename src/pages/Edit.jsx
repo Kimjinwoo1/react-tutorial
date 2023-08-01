@@ -10,7 +10,6 @@ export default function Edit() {
   const data = useSelector((state) => state.dataSlice);
 
   const { state } = useLocation();
-  console.log("state=>", state.findData);
 
   const dispatch = useDispatch();
 
@@ -29,7 +28,6 @@ export default function Edit() {
       title: editTitle,
       content: editContent,
     };
-    console.log("newData=>", newData);
     if (state) {
       dispatch(editData(newData));
       navigate("/");
