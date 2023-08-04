@@ -1,21 +1,34 @@
 import React, { useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Header from "../common/Header";
 import Container from "../common/Container";
-import { useDispatch, useSelector } from "react-redux";
-import { removeData } from "../redux/modules/memo";
 import { styled } from "styled-components";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../firebase";
+import { useMutation, useQueryClient } from "react-query";
+import { deleteMemo } from "../api/memo";
 
-export default function Main() {
+export default function Main({ data, isLoading, isError }) {
+  const [user] = useAuthState(auth);
+
   const navigate = useNavigate();
 
-  const dispatch = useDispatch();
+  const queryClient = useQueryClient();
 
-  const findData = useSelector((state) => state.dataSlice);
+  // id로 deleteMemo에 넣어줌으로써 api에 작성한 곳으로 보내서 삭줴
+  const mutation = useMutation((id) => deleteMemo(id), {
+    onSuccess: () => {
+      queryClient.refetchQueries("memo");
+    },
+  });
 
-  const [user] = useAuthState(auth);
+  if (isLoading) {
+    return <div>로딩중..</div>;
+  }
+
+  if (isError) {
+    return <div>오류가 발생했숨다</div>;
+  }
 
   return (
     <>
@@ -27,14 +40,14 @@ export default function Main() {
               {
                 user ? navigate("/create") : alert("로그인이 필요합니다.");
               }
-              // navigate("/create");
             }}
           >
             추가
           </StContainerButton>
         </StContainerDiv>
         {/* 초기값 형성해 놓은 걸 map 함수로 화면에뿌리기 */}
-        {findData.map((findData) => {
+        {data.map((findData) => {
+          // console.log("memo=>", memo);
           return (
             <StMainDiv key={findData.id}>
               <StCardDiv
@@ -46,13 +59,15 @@ export default function Main() {
                 <StContentP>{findData.content}</StContentP>
               </StCardDiv>
               <StAuthorDiv>
+                {/* 나중에 확인 */}
                 <div>{findData.author}</div>
                 <div>
-                  {/* <Link to={`/edit/${data.id}`}> */}
                   <StEditButton
                     onClick={() => {
                       // 클릭시 게시물의 author와 로그인한 이메일이 일치할때만 이동구현.
-                      if (findData.author == user.email) {
+                      if (!user) {
+                        alert("로그인이 필요합니다.");
+                      } else if (findData.author === user.email) {
                         navigate("/edit", {
                           state: {
                             findData,
@@ -74,13 +89,16 @@ export default function Main() {
                   >
                     수정
                   </StEditButton>
-                  {/* </Link> */}
 
                   <StDeleteButton
                     onClick={() => {
-                      if (findData.author == user.email) {
+                      if (!user) {
+                        alert("로그인이 필요합니다.");
+                      } else if (findData.author == user.email) {
+                        // console.log("findData.author=>", findData.author);
+                        // console.log("user.email=>", user.email);
                         if (window.confirm("삭제하시겠습니까?")) {
-                          dispatch(removeData(findData.id));
+                          mutation.mutate(findData.id);
                         }
                       } else {
                         alert("본인 게시물만 삭제할수 있습니다.");

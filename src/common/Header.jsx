@@ -4,14 +4,13 @@ import { FaHome } from "react-icons/fa";
 import { auth } from "../firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { signOut } from "firebase/auth";
-import { hover } from "@testing-library/user-event/dist/hover";
 import { styled } from "styled-components";
 
 export default function Header() {
   const navigate = useNavigate();
 
   // useAuthState를 통해서 인증정보 접근, Firebase Auth 상태를 추적하는 데 사용할 수 있는 React 훅
-
+  // 설치안하고 할수있는 방법있다
   const [user] = useAuthState(auth);
   // console.log("user=>", user);
 

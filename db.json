@@ -1,10 +1,28 @@
 {
-  "posts": [
+  "memo": [
     {
       "id": 1,
-      "title": "제목예시",
-      "content": "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Lorem ipsum dolor, sit amet consectetur adipisicing elit.Lorem ipsum dolor, sit amet consectetur adipisicing elit.Lorem ipsum dolor, sit amet consectetur adipisicing elit.",
-      "author": "abc@naver.com"
+      "title": "제목입니다 11",
+      "content": "내용입니다 11",
+      "author": "작성자 11"
+    },
+    {
+      "id": 2,
+      "title": "제목입니다 22",
+      "content": "내용입니다 22",
+      "author": "작성자 22"
+    },
+    {
+      "id": 3,
+      "title": "제목입니다 33",
+      "content": "내용입니다 33",
+      "author": "작성자 33"
+    },
+    {
+      "id": "KH8FLOTi2E8fFNua39kKg",
+      "title": "ㅁ",
+      "content": "ㄹㅇ",
+      "author": "test@test.com"
     }
   ]
 }

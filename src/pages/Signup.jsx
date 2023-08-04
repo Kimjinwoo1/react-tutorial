@@ -1,8 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Header from "../common/Header";
 import Container from "../common/Container";
 import { useNavigate } from "react-router-dom";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  fetchSignInMethodsForEmail,
+} from "firebase/auth";
 import { auth } from "../firebase";
 
 export default function Signup() {
@@ -54,17 +57,37 @@ export default function Signup() {
     }
 
     try {
+      // firebase 공식문서에 나와있음 fetchSignInMethodsForEmail(auth, email);
+      const signInMethods = await fetchSignInMethodsForEmail(auth, email);
+      // Friebase인증 시스템에서 이메일을 못찾거나 없으면 0
+      // 이메일이 발견되면 해당이메일에 연결된 로그인 방법을 포함한 배열을 반환하니깐 0보다 크다
+      if (signInMethods.length > 0) {
+        alert("이미 사용 중인 이메일 입니다.");
+        return;
+      }
+
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         email,
         password
       );
       alert("회원가입이 완료되었습니다.");
-      navigate("/login");
+      navigate("/");
     } catch (error) {
       const errorCode = error.code;
       const errorMessage = error.message;
-      alert("오류가 발생했습니다. 잠시후 다시 시도해주세요");
+      // 구체적으로 어떤 error가 발생했는지 보여준다. 위에러코드를 한글로 변환해서
+      if (errorCode === "auth/operation-not-allowed") {
+        alert("이메일/비밀번호 로그인을 사용할 수 없습니다. 휴먼계정");
+      } else if (errorCode === "auth/weak-password") {
+        alert("비밀번호가 6자리 이하입니다.");
+      } else if (errorCode === "auth/too-many-requests") {
+        alert("너무 많은 로그인 시도로 인해 잠시 후에 다시 시도해주세요.");
+      } else if (errorCode === "auth/network-request-failed") {
+        alert("인터넷 연결 문제로 인해 로그인 요청에 실패했습니다.");
+      } else {
+        alert("알수없는 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+      }
     }
     setEmail("");
     setPassword("");

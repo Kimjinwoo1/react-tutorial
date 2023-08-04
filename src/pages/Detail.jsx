@@ -1,29 +1,58 @@
 import React from "react";
 import Header from "../common/Header";
 import Container from "../common/Container";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { removeData } from "../redux/modules/memo";
+import { useNavigate, useParams } from "react-router-dom";
 import { styled } from "styled-components";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../firebase";
+import { useMutation, useQueryClient } from "react-query";
+import { deleteMemo } from "../api/memo";
 
-export default function Detail() {
-  const data = useSelector((state) => state.dataSlice);
-
-  const dispatch = useDispatch();
-
+export default function Detail({ data, isLoading, isError }) {
   const navigate = useNavigate();
   // 수정사항 아이디값 추출
   const { id } = useParams();
+  // console.log("id=>", id);
 
-  const findData = data.find((item) => item.id === id);
+  const findData = data.find((item) => item.id == id);
+  // console.log("findData=>", findData);
 
   const [user] = useAuthState(auth);
 
-  // if (!findData) {
-  //   return <div>로딩중입니다.</div>;
-  // }
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation((id) => deleteMemo(id), {
+    onSuccess: () => {
+      queryClient.refetchQueries("memo");
+      // 이거 이해가안됨 mutation 부분에서 완료되고 navigate가 안되서
+      // 혹시나해서 성공했을때 여기부분으로 옴겨서 해봤는데 navigate()가작동이됨
+      // 와이 아래는 안되는걸깝슈
+      // 아래 else 밖에서도 작동은하고 여기서도 작동은된다 3항연산자 안에서만안될까..? redux사용했을떄는됬는데
+      navigate("/");
+    },
+  });
+
+  // if문중첩을 사용하지말라고 해서 따로 빼서 3항연산자로사용함.
+  // 로그인이 안되었을때 오류가 나서 if문으로 분리함
+  const handleDelete = () => {
+    if (!user) {
+      alert("로그인이 필요합니다.");
+    } else {
+      const userAuthor = findData.author === user.email;
+      userAuthor
+        ? window.confirm("삭제하시겠습니까?") && mutation.mutate(findData.id)
+        : alert("본인 게시물만 삭제할 수 있습니다.");
+    }
+  };
+
+  if (isLoading) {
+    return <div>로딩중...</div>;
+  }
+
+  if (isError) {
+    return <div>오류발생!!!!!!!!!!!!!!!!!!!!!</div>;
+  }
+
   return (
     <>
       <Header />
@@ -34,10 +63,11 @@ export default function Detail() {
             <p>{findData?.content}</p>
           </StContentDiv>
           <StButtonDiv>
-            {/* <Link to={`/edit/${findData?.id}`}> */}
             <StEditButton
               onClick={() => {
-                if (findData.author == user.email) {
+                if (!user) {
+                  alert("로그인이 필요합니다");
+                } else if (findData.author == user.email) {
                   navigate("/edit", {
                     state: {
                       findData,
@@ -50,27 +80,10 @@ export default function Detail() {
             >
               수정
             </StEditButton>
-            {/* </Link> */}
 
-            <StDeleteButton
-              onClick={() => {
-                if (findData.author == user.email) {
-                  if (window.confirm("삭제하시겠습니까?")) {
-                    dispatch(removeData(findData?.id));
-                    navigate("/");
-                  }
-                } else {
-                  alert("본인 게시물만 삭제할수 있습니다.");
-                }
-              }}
-            >
-              삭제
-            </StDeleteButton>
+            <StDeleteButton onClick={handleDelete}>삭제</StDeleteButton>
           </StButtonDiv>
         </div>
-        {/* //   );
-          // }
-          // )} */}
       </Container>
     </>
   );

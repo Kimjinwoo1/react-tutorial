@@ -3,23 +3,27 @@ import Header from "../common/Header";
 import Container from "../common/Container";
 import { useNavigate } from "react-router-dom";
 import { nanoid } from "nanoid";
-import { useDispatch, useSelector } from "react-redux";
-import { addData } from "../redux/modules/memo";
 import { styled } from "styled-components";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../firebase";
+import { useMutation, useQueryClient } from "react-query";
+import { addMemo } from "../api/memo";
 
 export default function Create() {
   const navigate = useNavigate();
-
-  const dispatch = useDispatch();
-
-  const data = useSelector((state) => state.data);
 
   const [user] = useAuthState(auth);
 
   const [title, setTitle] = useState("");
   const [contents, setContents] = useState("");
+
+  const queryClient = useQueryClient();
+  const mutation = useMutation(addMemo, {
+    onSuccess: () => {
+      queryClient.invalidateQueries("memo");
+      console.log("성공하였습니다.");
+    },
+  });
 
   return (
     <>
@@ -28,13 +32,16 @@ export default function Create() {
         <StForm
           onSubmit={(e) => {
             e.preventDefault();
-            const newData = {
+            const newMemo = {
               id: nanoid(),
               title,
               content: contents,
-              author: [user.email],
+              // 배열로 되어있는데 잘들어왔지만 []삭제
+              author: user.email,
             };
-            dispatch(addData(newData));
+            // dispatch(addData(newMemo));
+            // console.log("newData=>", newData);
+            mutation.mutate(newMemo);
             navigate("/");
           }}
         >

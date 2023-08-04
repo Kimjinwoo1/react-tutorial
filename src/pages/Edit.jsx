@@ -1,37 +1,46 @@
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useState } from "react";
 import Header from "../common/Header";
 import Container from "../common/Container";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { editData } from "../redux/modules/memo";
+import { useLocation, useNavigate } from "react-router-dom";
+
+import {} from "../redux/modules/memo";
 import { styled } from "styled-components";
+import { editMemo } from "../api/memo";
+import { useMutation, useQueryClient } from "react-query";
 
 export default function Edit() {
-  const data = useSelector((state) => state.dataSlice);
+  // const data = useSelector((state) => state.dataSlice);
 
   const { state } = useLocation();
-
-  const dispatch = useDispatch();
-
-  const { id } = useParams();
-  const findItem = data.find((item) => item.id === id);
-  // 없으면 문자열로한다 아님 옵셔널체이닝을 걸어준다.
-  const [editTitle, editSetTitle] = useState(state.findData?.title || "");
-  const [editContent, editSetContent] = useState(state.findData?.content || "");
-
+  console.log("state=>", state);
   const navigate = useNavigate();
+
+  const queryClient = useQueryClient();
+
+  const [editTitle, editSetTitle] = useState(state?.findData?.title || "");
+  const [editContent, editSetContent] = useState(
+    state?.findData?.content || ""
+  );
+
+  const editMemoMutation = useMutation(
+    (updateMemo) => editMemo(state.findData.id, updateMemo),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries("memo");
+        navigate("/");
+      },
+    }
+  );
 
   const submitHandler = (e) => {
     e.preventDefault();
-    const newData = {
+    const updateMemo = {
+      //url로 접근을하면 state가 없을수도있다.
       id: state.findData.id,
       title: editTitle,
       content: editContent,
     };
-    if (state) {
-      dispatch(editData(newData));
-      navigate("/");
-    }
+    editMemoMutation.mutate(updateMemo);
   };
 
   return (
@@ -55,7 +64,6 @@ export default function Edit() {
               onChange={(e) => {
                 editSetContent(e.target.value);
               }}
-              style={{}}
             />
           </StTextareaDiv>
           <StEditBtn>수정하기</StEditBtn>
